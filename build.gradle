@@ -42,17 +42,6 @@ test {
     }
 }
 
-processResources {
-    filesMatching('release.properties') {
-        filter {
-            String line -> line.replaceAll("@VERSION@", version)
-        }
-        filter {
-            String line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
-        }
-    }
-}
-
 javadoc {
     options.overview = "src/main/java/overview.html"
     options.source = 11
