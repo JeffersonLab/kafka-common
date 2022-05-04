@@ -1,0 +1,109 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+description = "Jefferson Lab Kafka Common Library"
+group 'org.jlab'
+version '1.0.0'
+
+ext.releaseDate = 'May 4 2022'
+
+tasks.withType(JavaCompile) {
+    options.release = 11
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.apache.kafka:kafka-clients:3.1.0",
+            "com.fasterxml.jackson.core:jackson-databind:2.13.2.2",
+            "log4j:log4j:1.2.17",
+            "org.slf4j:slf4j-log4j12:1.7.36"
+    testImplementation "junit:junit:4.13.2",
+     "org.testcontainers:testcontainers:1.17.1",
+     "org.testcontainers:kafka:1.17.1"
+}
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+processResources {
+    filesMatching('release.properties') {
+        filter {
+            String line -> line.replaceAll("@VERSION@", version)
+        }
+        filter {
+            String line -> line.replaceAll("@RELEASE_DATE@", releaseDate)
+        }
+    }
+}
+
+javadoc {
+    options.overview = "src/main/java/overview.html"
+    options.source = 11
+    options.with {
+        links 'https://docs.oracle.com/en/java/javase/11/docs/api/'
+    }
+}
+
+signing {
+    sign publishing.publications
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = project.findProperty("ossrh.user") ?: System.getenv("OSSRH_USER")
+                password = project.findProperty("ossrh.token") ?: System.getenv("OSSRH_TOKEN")
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+            pom {
+                name = project.name
+                description = project.description
+                url = "https://github.com/JeffersonLab/kafka-common"
+                licenses {
+                    license {
+                        name = "The MIT License"
+                        url = "https://github.com/JeffersonLab/kafka-common/blob/master/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "slominskir"
+                        name = "Ryan Slominski"
+                        email = "ryans@jlab.org"
+                    }
+                }
+                scm {
+                    url = "https://github.com/JeffersonLab/kafka-common.git"
+                }
+            }
+        }
+    }
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+}
