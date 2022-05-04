@@ -1,5 +1,7 @@
 # kafka-common [![Java CI with Gradle](https://github.com/JeffersonLab/kafka-common/actions/workflows/gradle.yml/badge.svg)](https://github.com/JeffersonLab/kafka-common/actions/workflows/gradle.yml) [![Maven Central](https://badgen.net/maven/v/maven-central/org.jlab/kafka-common)](https://repo1.maven.org/maven2/org/jlab/kafka-common/)
+
 Common Java utilities for Apache Kafka
+
 ---
 - [Install](https://github.com/JeffersonLab/kafka-common#install)
 - [API](https://github.com/JeffersonLab/kafka-common#api)
