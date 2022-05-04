@@ -2,7 +2,7 @@
 Common Java utilities for Apache Kafka
 ---
 - [Install](https://github.com/JeffersonLab/kafka-common#install)
-- [API](https://github.com/JeffersonLab/kafka-commonj#api)
+- [API](https://github.com/JeffersonLab/kafka-common#api)
 - [Configure](https://github.com/JeffersonLab/kafka-common#configure)
 - [Build](https://github.com/JeffersonLab/kafka-common#build)
 ---
