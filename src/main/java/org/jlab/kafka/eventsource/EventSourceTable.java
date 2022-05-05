@@ -117,10 +117,11 @@ public class EventSourceTable<K, V> implements AutoCloseable {
      *
      * @param timeout the maximum time to wait
      * @param unit the time unit of the timeout argument
+     * @return true if the highWaterOffset was reached before timeout, false otherwise
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public void awaitHighWaterOffset(long timeout, TimeUnit unit) throws InterruptedException {
-        highWaterSignal.await(timeout, unit);
+    public boolean awaitHighWaterOffset(long timeout, TimeUnit unit) throws InterruptedException {
+        return highWaterSignal.await(timeout, unit);
     }
 
     /**
