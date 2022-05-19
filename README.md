@@ -52,3 +52,4 @@ gradlew build
 
 ## See Also
 - [jaws-libj](https://github.com/JeffersonLab/jaws-libj)
+- [epics2kafka](https://github.com/JeffersonLab/epics2kafka)
