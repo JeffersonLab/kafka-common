@@ -207,12 +207,13 @@ public class EventSourceTable<K, V> implements AutoCloseable {
 
         boolean provideCompactedCache = config.getBoolean(EventSourceConfig.EVENT_SOURCE_COMPACTED_CACHE);
 
-        List<EventSourceRecord<K, V>> eventRecords = new ArrayList<>();
         LinkedHashMap<K, EventSourceRecord<K,V>> compactedCache = new LinkedHashMap<>();
 
         while(!endReached && !timeout.get() && consumerState.get() == CONSUMER_STATE.RUNNING) {
             log.debug("polling for changes ({})", config.getString(EventSourceConfig.EVENT_SOURCE_TOPIC));
             ConsumerRecords<K, V> consumerRecords = consumer.poll(Duration.ofMillis(config.getLong(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS)));
+
+            List<EventSourceRecord<K, V>> eventRecords = new ArrayList<>();
 
             if (consumerRecords.count() > 0) { // We have changes
                 for(ConsumerRecord<K, V> consumerRecord: consumerRecords) {

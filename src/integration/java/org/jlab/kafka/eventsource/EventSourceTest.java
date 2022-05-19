@@ -215,7 +215,6 @@ public class EventSourceTest {
         // Admin
         String topicName = setupTopic();
 
-
         // Producer
         KafkaProducer<String, String> producer = setupProducer();
 
@@ -258,6 +257,64 @@ public class EventSourceTest {
             producer.send(new ProducerRecord<>(topicName, "key6", "value6")).get();
 
             Thread.sleep(5000);
+
+        } finally {
+            cleanUpTopic(topicName);
+        }
+
+        assertEquals(6, database.size());
+        assertEquals(6, calls.get());
+    }
+
+    @Test
+    public void batchDuplicateTest() throws ExecutionException, InterruptedException, TimeoutException {
+        // Admin
+        String topicName = setupTopic();
+
+        // Producer
+        KafkaProducer<String, String> producer = setupProducer();
+
+        // EventSourceTable (Consumer)
+        Properties props = getDefaultProps(topicName);
+
+        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
+        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
+
+        final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
+
+        AtomicInteger calls = new AtomicInteger(0);
+
+        try(EventSourceTable<String, String> table = new EventSourceTable<>(props)) {
+
+            table.addListener(new EventSourceListener<String, String>() {
+                @Override
+                public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
+                    System.out.println("initialState: ");
+                    for (EventSourceRecord record : records) {
+
+                        // This test is all about ensuring we don't have duplicates since we never input
+                        // duplicates below via producer
+                        assertNull(database.get(record.getKey()));
+
+                        System.out.println("Record: " + record);
+                    }
+                    putAll(database, records);
+                    calls.getAndIncrement();
+                }
+            });
+
+            producer.send(new ProducerRecord<>(topicName, "key1", "value1")).get();
+            producer.send(new ProducerRecord<>(topicName, "key2", "value2")).get();
+            producer.send(new ProducerRecord<>(topicName, "key3", "value3")).get();
+            producer.send(new ProducerRecord<>(topicName, "key4", "value4")).get();
+            producer.send(new ProducerRecord<>(topicName, "key5", "value5")).get();
+            producer.send(new ProducerRecord<>(topicName, "key6", "value6")).get();
+
+            Thread.sleep(5000);
+
+            table.start();
+
+            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
 
         } finally {
             cleanUpTopic(topicName);
