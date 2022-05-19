@@ -24,7 +24,7 @@ jobs:
     - name: Wait for containers to settle
       run: docker exec -i kafka bash -c "sleep 10"
     - name: Run integration test
-      run: gradlew integrationTestOutsideNetwork
+      run: ./gradlew integrationTestOutsideNetwork
     - name: Dump kafka logs
       if: always()
       run: docker logs kafka
