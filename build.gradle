@@ -49,24 +49,8 @@ dependencies {
 }
 
 task integrationTest(type: Test) {
-    description = 'Runs integration tests using existing BOOTSTRAP_SERVERS env.'
+    description = 'Runs integration tests using existing BOOTSTRAP_SERVERS env or test default (localhost:9094).'
     group = 'verification'
-
-    testClassesDirs = sourceSets.integration.output.classesDirs
-    classpath = sourceSets.integration.runtimeClasspath
-
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-        showStandardStreams = true
-    }
-}
-
-task integrationTestOutsideNetwork(type: Test) {
-    description = 'Runs integration tests using Kafka OUTSIDE Advertised Listener explicit BOOTSTRAP_SERVERS.'
-    group = 'verification'
-
-    environment "BOOTSTRAP_SERVERS", "localhost:9094"
 
     testClassesDirs = sourceSets.integration.output.classesDirs
     classpath = sourceSets.integration.runtimeClasspath

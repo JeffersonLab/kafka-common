@@ -24,27 +24,42 @@ import static org.junit.Assert.assertNull;
 public class EventSourceTest {
     private static Logger LOGGER = LoggerFactory.getLogger(EventSourceTest.class);
 
-
     private String getBootstrapServers() {
         String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS");
 
         if(bootstrapServers == null) {
-            bootstrapServers = "localhost:9092";
+            bootstrapServers = "localhost:9094";
         }
 
         return bootstrapServers;
     }
 
-    private void setupTopic(String topicName) throws ExecutionException, InterruptedException, TimeoutException {
+    private String setupTopic() throws ExecutionException, InterruptedException, TimeoutException {
+
+        String topicName = UUID.randomUUID().toString();
 
         Properties config = new Properties();
         config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
 
         try (AdminClient adminClient = AdminClient.create(config)) {
 
-            Collection<NewTopic> topics = Collections.singletonList(new NewTopic(topicName, 1, (short) 1));
+            Collection<NewTopic> createTopics = Collections.singletonList(new NewTopic(topicName, 1, (short) 1));
 
-            adminClient.createTopics(topics).all().get(30, TimeUnit.SECONDS);
+            adminClient.createTopics(createTopics).all().get(10, TimeUnit.SECONDS);
+        }
+
+        return topicName;
+    }
+
+    private void cleanUpTopic(String topicName) throws ExecutionException, InterruptedException, TimeoutException {
+        Properties config = new Properties();
+        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
+
+        try (AdminClient adminClient = AdminClient.create(config)) {
+
+            Collection<String> deleteTopics = Collections.singletonList(topicName);
+
+            adminClient.deleteTopics(deleteTopics).all().get(10, TimeUnit.SECONDS);
         }
     }
 
@@ -80,10 +95,8 @@ public class EventSourceTest {
     @Test
     public void basicTableTest() throws ExecutionException, InterruptedException, TimeoutException {
 
-        final String topicName = "testing";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -113,6 +126,8 @@ public class EventSourceTest {
             table.start();
 
             table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(1, database.size());
@@ -120,11 +135,8 @@ public class EventSourceTest {
 
     @Test
     public void resumeOffsetTest() throws ExecutionException, InterruptedException, TimeoutException {
-
-        final String topicName = "testing2";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -158,6 +170,8 @@ public class EventSourceTest {
             table.start();
 
             table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(1, database.size());
@@ -165,10 +179,8 @@ public class EventSourceTest {
 
     @Test
     public void emptyTopicTest() throws ExecutionException, InterruptedException, TimeoutException {
-        final String topicName = "testing3";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
         // EventSourceTable (Consumer)
         Properties props = getDefaultProps(topicName);
@@ -191,6 +203,8 @@ public class EventSourceTest {
             table.start();
 
             table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(0, database.size());
@@ -198,10 +212,8 @@ public class EventSourceTest {
 
     @Test
     public void batchTest() throws ExecutionException, InterruptedException, TimeoutException {
-        final String topicName = "testing4";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -247,6 +259,8 @@ public class EventSourceTest {
 
             Thread.sleep(5000);
 
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(6, database.size());
@@ -255,10 +269,8 @@ public class EventSourceTest {
 
     @Test
     public void cacheTest() throws ExecutionException, InterruptedException, TimeoutException {
-        final String topicName = "testing5";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -301,6 +313,8 @@ public class EventSourceTest {
 
             Thread.sleep(5000);
 
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(6, database.size());
@@ -309,10 +323,8 @@ public class EventSourceTest {
 
     @Test
     public void cacheDisabledTest() throws ExecutionException, InterruptedException, TimeoutException {
-        final String topicName = "testing6";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -356,6 +368,8 @@ public class EventSourceTest {
 
             Thread.sleep(5000);
 
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(0, database.size());
@@ -364,10 +378,8 @@ public class EventSourceTest {
 
     @Test
     public void cacheCompactionTest() throws ExecutionException, InterruptedException, TimeoutException {
-        final String topicName = "testing7";
-
         // Admin
-        setupTopic(topicName);
+        String topicName = setupTopic();
 
 
         // Producer
@@ -417,6 +429,8 @@ public class EventSourceTest {
 
             Thread.sleep(5000);
 
+        } finally {
+            cleanUpTopic(topicName);
         }
 
         assertEquals(6, database.size());
