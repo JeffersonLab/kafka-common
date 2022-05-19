@@ -25,14 +25,57 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    integration {
+        java.srcDir "${projectDir}/src/integration/java"
+        resources.srcDir "${projectDir}/src/integration/resources"
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    testImplementation.extendsFrom implementation
+    integrationImplementation.extendsFrom testImplementation
+    integrationRuntimeOnly.extendsFrom runtimeOnly
+}
+
 dependencies {
     implementation "org.apache.kafka:kafka-clients:3.1.0",
             "com.fasterxml.jackson.core:jackson-databind:2.13.2.2",
             "log4j:log4j:1.2.17",
             "org.slf4j:slf4j-log4j12:1.7.36"
-    testImplementation "junit:junit:4.13.2",
-     "org.testcontainers:testcontainers:1.17.1",
-     "org.testcontainers:kafka:1.17.1"
+    testImplementation "junit:junit:4.13.2"
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests using existing BOOTSTRAP_SERVERS env.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integration.output.classesDirs
+    classpath = sourceSets.integration.runtimeClasspath
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+}
+
+task integrationTestOutsideNetwork(type: Test) {
+    description = 'Runs integration tests using Kafka OUTSIDE Advertised Listener explicit BOOTSTRAP_SERVERS.'
+    group = 'verification'
+
+    environment "BOOTSTRAP_SERVERS", "localhost:9094"
+
+    testClassesDirs = sourceSets.integration.output.classesDirs
+    classpath = sourceSets.integration.runtimeClasspath
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
 }
 
 test {
@@ -40,6 +83,10 @@ test {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
     }
+}
+
+processIntegrationResources {
+    duplicatesStrategy 'include'
 }
 
 javadoc {

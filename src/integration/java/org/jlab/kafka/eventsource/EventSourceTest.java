@@ -8,15 +8,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -30,31 +24,37 @@ import static org.junit.Assert.assertNull;
 public class EventSourceTest {
     private static Logger LOGGER = LoggerFactory.getLogger(EventSourceTest.class);
 
-    @ClassRule
-    public static Network network = Network.newNetwork();
 
-    @ClassRule
-    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.1"))
-            .withNetwork(network)
-            .withLogConsumer(new Slf4jLogConsumer(LOGGER).withPrefix("kafka"))
-            .withCreateContainerCmdModifier(cmd -> cmd.withHostName("kafka").withName("kafka"));
+    private String getBootstrapServers() {
+        String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS");
+
+        if(bootstrapServers == null) {
+            bootstrapServers = "localhost:9092";
+        }
+
+        return bootstrapServers;
+    }
 
     private void setupTopic(String topicName) throws ExecutionException, InterruptedException, TimeoutException {
-        AdminClient adminClient = AdminClient.create(ImmutableMap.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers()
-        ));
 
-        Collection<NewTopic> topics = Collections.singletonList(new NewTopic(topicName, 1, (short) 1));
+        Properties config = new Properties();
+        config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
 
-        adminClient.createTopics(topics).all().get(30, TimeUnit.SECONDS);
+        try (AdminClient adminClient = AdminClient.create(config)) {
+
+            Collection<NewTopic> topics = Collections.singletonList(new NewTopic(topicName, 1, (short) 1));
+
+            adminClient.createTopics(topics).all().get(30, TimeUnit.SECONDS);
+        }
     }
 
     private KafkaProducer<String,String> setupProducer() {
+        Properties config = new Properties();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
+        config.put(ProducerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
+
          return new KafkaProducer<>(
-                ImmutableMap.of(
-                        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers(),
-                        ProducerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString()
-                ),
+                config,
                 new StringSerializer(),
                 new StringSerializer()
         );
@@ -63,7 +63,7 @@ public class EventSourceTest {
     private Properties getDefaultProps(String topicName) {
         Properties props = new Properties();
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_BOOTSTRAP_SERVERS, kafka.getBootstrapServers());
+        props.setProperty(EventSourceConfig.EVENT_SOURCE_BOOTSTRAP_SERVERS, getBootstrapServers());
         props.setProperty(EventSourceConfig.EVENT_SOURCE_KEY_DESERIALIZER, StringDeserializer.class.getName());
         props.setProperty(EventSourceConfig.EVENT_SOURCE_VALUE_DESERIALIZER, StringDeserializer.class.getName());
         props.setProperty(EventSourceConfig.EVENT_SOURCE_TOPIC, topicName);
@@ -222,6 +222,9 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
+
+                    assertEquals(1, records.size());
+
                     putAll(database, records);
                     System.out.println("initialState: ");
                     for (EventSourceRecord record : records) {
