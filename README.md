@@ -59,7 +59,7 @@ docker compose -f test.yml up
 
 Wait for containers to start then:
 ```
-gradle integrationTest
+gradlew integrationTest
 ```
 
 **Note**: By default integration tests require localhost port 9094 be available for Kafka.
