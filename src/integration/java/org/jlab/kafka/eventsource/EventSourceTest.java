@@ -115,17 +115,21 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
-                    putAll(database, records);
-                    System.out.println("changes: ");
+                    /*System.out.println("changes: ");
                     for (EventSourceRecord record : records) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    putAll(database, records);
                 }
             });
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -159,17 +163,21 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
-                    putAll(database, records);
-                    System.out.println("batch: ");
+                    /*System.out.println("batch: ");
                     for (EventSourceRecord record : records) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    putAll(database, records);
                 }
             });
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -192,17 +200,21 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
-                    putAll(database, records);
-                    System.out.println("initialState: ");
+                    /*System.out.println("initialState: ");
                     for (EventSourceRecord record : records) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    putAll(database, records);
                 }
             });
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -236,18 +248,22 @@ public class EventSourceTest {
 
                     assertEquals(1, records.size());
 
-                    putAll(database, records);
-                    System.out.println("initialState: ");
+                    /*System.out.println("initialState: ");
                     for (EventSourceRecord record : records) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    putAll(database, records);
                     calls.getAndIncrement();
                 }
             });
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
 
             producer.send(new ProducerRecord<>(topicName, "key1", "value1")).get();
             producer.send(new ProducerRecord<>(topicName, "key2", "value2")).get();
@@ -289,14 +305,14 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void batch(List<EventSourceRecord<String, String>> records, boolean highWaterReached) {
-                    System.out.println("initialState: ");
+                    //System.out.println("initialState: ");
                     for (EventSourceRecord record : records) {
 
                         // This test is all about ensuring we don't have duplicates since we never input
                         // duplicates below via producer
                         assertNull(database.get(record.getKey()));
 
-                        System.out.println("Record: " + record);
+                        //System.out.println("Record: " + record);
                     }
                     putAll(database, records);
                     calls.getAndIncrement();
@@ -314,8 +330,11 @@ public class EventSourceTest {
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
 
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -328,7 +347,6 @@ public class EventSourceTest {
     public void cacheTest() throws ExecutionException, InterruptedException, TimeoutException {
         // Admin
         String topicName = setupTopic();
-
 
         // Producer
         KafkaProducer<String, String> producer = setupProducer();
@@ -348,11 +366,11 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void highWaterOffset(LinkedHashMap<String, EventSourceRecord<String, String>> records) {
-                    System.out.println("initialState: ");
-                    database.putAll(records);
+                    /*System.out.println("initialState: ");
                     for (EventSourceRecord record : records.values()) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    database.putAll(records);
                     calls.getAndIncrement();
                 }
             });
@@ -366,10 +384,11 @@ public class EventSourceTest {
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
 
-            Thread.sleep(5000);
-
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -403,11 +422,11 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void highWaterOffset(LinkedHashMap<String, EventSourceRecord<String, String>> records) {
-                    System.out.println("initialState: ");
-                    database.putAll(records);
+                    /*System.out.println("initialState: ");
                     for (EventSourceRecord record : records.values()) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    database.putAll(records);
                     calls.getAndIncrement();
                 }
             });
@@ -421,10 +440,11 @@ public class EventSourceTest {
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
 
-            Thread.sleep(5000);
-
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
@@ -457,11 +477,11 @@ public class EventSourceTest {
             table.addListener(new EventSourceListener<String, String>() {
                 @Override
                 public void highWaterOffset(LinkedHashMap<String, EventSourceRecord<String, String>> records) {
-                    System.out.println("initialState: ");
-                    database.putAll(records);
+                    /*System.out.println("initialState: ");
                     for (EventSourceRecord record : records.values()) {
                         System.out.println("Record: " + record);
-                    }
+                    }*/
+                    database.putAll(records);
                     calls.getAndIncrement();
                 }
             });
@@ -482,10 +502,11 @@ public class EventSourceTest {
 
             table.start();
 
-            table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
 
-            Thread.sleep(5000);
-
+            if(!reached) {
+                throw new TimeoutException("awaitHighWater Timeout!");
+            }
         } finally {
             cleanUpTopic(topicName);
         }
