@@ -8,6 +8,7 @@ Common Java utilities for Apache Kafka.  Currently the library provides support 
 - [API](https://github.com/JeffersonLab/kafka-common#api)
 - [Configure](https://github.com/JeffersonLab/kafka-common#configure)
 - [Build](https://github.com/JeffersonLab/kafka-common#build)
+- [See Also](https://github.com/JeffersonLab/kafka-common#see-also)
 ---
 
 ## Overview
@@ -48,3 +49,6 @@ gradlew build
 **Note**: If you do not already have Gradle installed, it will be installed automatically by the wrapper script included in the source
 
 **Note for JLab On-Site Users**: Jefferson Lab has an intercepting [proxy](https://gist.github.com/slominskir/92c25a033db93a90184a5994e71d0b78)
+
+## See Also
+- [jaws-libj](https://github.com/JeffersonLab/jaws-libj)
