@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 17
+    - name: Build with Gradle
+      run: ./gradlew build
+    - name: Start containers
+      run: docker compose -f "test.yml" up -d
+    - name: Wait for containers to settle
+      run: docker exec -i kafka bash -c "sleep 10"
+    - name: Run integration test
+      run: gradlew integrationTestOutsideNetwork
+    - name: Dump kafka logs
+      if: always()
+      run: docker logs kafka
+    - name: Stop containers
+      if: always()
+      run: docker compose -f "test.yml" down
+
+
+
+
+
+
+
+
