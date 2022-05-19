@@ -3,11 +3,17 @@
 Common Java utilities for Apache Kafka.  Currently the library provides support for [Event Sourcing](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka-whats-connection/) and Json Serde.
 
 ---
+- [Overview](https://github.com/JeffersonLab/kafka-common#overview)
 - [Install](https://github.com/JeffersonLab/kafka-common#install)
 - [API](https://github.com/JeffersonLab/kafka-common#api)
 - [Configure](https://github.com/JeffersonLab/kafka-common#configure)
 - [Build](https://github.com/JeffersonLab/kafka-common#build)
 ---
+
+## Overview
+The Event Sourcing scheme supported by this library is a simple entire record (database row / entity) per message approach.  All fields for a given record are always present (or implied null). For example the entire state of a given entity is always stored in a single message (some fields may still act as a 'foreign key' reference though). We could have instead allowed a more granular scheme where a message only contains the fields that are changing, and that would have at least two benefits: (1) save on message size with partial field changes and (2) Clients would not need to know the entire state of a record when making partial field changes (clients must re-set even the fields they aren't intending to change in the record currently). However, we went with the atomic strategy since it is easier to deal with - clients don't have to merge records, they're always replace and our use-cases so far haven't required space efficiency.   To make an update simply produce a new message containing the full state of the record.  To delete a record, produce a [tombstone](https://kafka.apache.org/documentation.html#compaction) message (null).
+
+
 
 ## Install
 
