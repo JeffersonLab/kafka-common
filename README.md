@@ -8,6 +8,7 @@ Common Java utilities for Apache Kafka.  Currently the library provides support 
 - [API](https://github.com/JeffersonLab/kafka-common#api)
 - [Configure](https://github.com/JeffersonLab/kafka-common#configure)
 - [Build](https://github.com/JeffersonLab/kafka-common#build)
+- [Test](https://github.com/JeffersonLab/kafka-common#test)
 - [See Also](https://github.com/JeffersonLab/kafka-common#see-also)
 ---
 
@@ -49,6 +50,19 @@ gradlew build
 **Note**: If you do not already have Gradle installed, it will be installed automatically by the wrapper script included in the source
 
 **Note for JLab On-Site Users**: Jefferson Lab has an intercepting [proxy](https://gist.github.com/slominskir/92c25a033db93a90184a5994e71d0b78)
+
+## Test
+Continuous Integration (CI) is setup using GitHub Actions, so on push tests are automatically run unless [no ci] is included in the commit message. Tests can be manually run on a local workstation using:
+```
+docker compose -f test.yml up
+```
+
+Wait for containers to start then:
+```
+gradle integrationTest
+```
+
+**Note**: By default integration tests require localhost port 9094 be available for Kafka.
 
 ## See Also
 - [jaws-libj](https://github.com/JeffersonLab/jaws-libj)
