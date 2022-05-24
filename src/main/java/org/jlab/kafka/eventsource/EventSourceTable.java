@@ -35,6 +35,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * It is not part of the Kafka Streams API and requires none of
  * that run-time scaffolding.
  * </p>
+ * <p>
+ * See: <a href="https://github.com/JeffersonLab/kafka-common/blob/aea6126d9463b7429562fb31ae67d0a18dc85a37/src/integration/java/org/jlab/kafka/eventsource/EventSourceTest.java#L36-L55">Usage Example</a>
+ * </p>
  * @param <K> The type for message keys
  * @param <V> The type for message values
  */
