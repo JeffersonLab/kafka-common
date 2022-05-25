@@ -37,7 +37,7 @@ Check the [Release Notes](https://github.com/JeffersonLab/kafka-common/releases)
 [Javadocs](https://jeffersonlab.github.io/kafka-common)
 
 ## Configure
-The EventSourceTable class (simplier version of KTable with some similarities to a standard Kafka Consumer class) is configured with the [EventSourceConfig](https://github.com/JeffersonLab/kafka-common/blob/main/src/main/java/org/jlab/kafka/eventsource/EventSourceConfig.java) class, which extends the common Kafka AbstractConfig.  Unlike the Kafka Streams _commit.interval.ms_ and _cache.max.byte.buffering_ configs EventSourceTable uses _event.source.poll.millis_ and _event.source.max.poll.records_.
+The EventSourceTable class (simplier version of KTable with some similarities to a standard Kafka Consumer class) is configured with the [EventSourceConfig](https://github.com/JeffersonLab/kafka-common/blob/main/src/main/java/org/jlab/kafka/eventsource/EventSourceConfig.java) class, which extends the common Kafka AbstractConfig.
 
 ## Build
 This project is built with [Java 17](https://adoptium.net/) (compiled to Java 11 bytecode), and uses the [Gradle 7](https://gradle.org/) build tool to automatically download dependencies and build the project from source:
