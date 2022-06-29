@@ -1,6 +1,6 @@
 # kafka-common [![Java CI with Gradle](https://github.com/JeffersonLab/kafka-common/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffersonLab/kafka-common/actions/workflows/ci.yml) [![Maven Central](https://badgen.net/maven/v/maven-central/org.jlab/kafka-common)](https://repo1.maven.org/maven2/org/jlab/kafka-common/)
 
-Common Java utilities for Apache Kafka.  Currently the library provides support for [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) [[1](https://www.confluent.io/blog/okay-store-data-apache-kafka/)], [[2](https://www.confluent.io/blog/publishing-apache-kafka-new-york-times/)], [[3](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka-whats-connection/)] and Json Serde.
+Common Java utilities for Apache Kafka.  Currently the library provides support for [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) [[1](https://www.confluent.io/blog/okay-store-data-apache-kafka/)], [[2](https://www.confluent.io/blog/publishing-apache-kafka-new-york-times/)], [[3](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka-whats-connection/)] and Json Serde. 
 
 ---
 - [Overview](https://github.com/JeffersonLab/kafka-common#overview)
@@ -13,7 +13,7 @@ Common Java utilities for Apache Kafka.  Currently the library provides support 
 ---
 
 ## Overview
-This librray supports treating Kafka as a persistent database, and we casually refer to this as Event Sourcing. The Event Sourcing scheme supported by this library is a simple entire record (database row / entity) per message approach.  All fields for a given record are always present (or implied null). The entire state of a given entity is always stored in a single message, the message key is required to be non-null and acts as the "primary key" in relational database terms, and the message value is the rest of the entity state (some fields may still act as a 'foreign key' reference though). 
+This librray supports treating Kafka as a persistent database, and we casually refer to this as Event Sourcing.   We're using the term Event Sourcing to mean a real-time feed of changes, that can also be replayed to build the full state for anyone re-joining mid-stream.  This is accomplished in Kafka with log compacted topics. We are using an Event Sourcing scheme with a simple entire record (database row / entity) per message approach.  All fields for a given record are always present (or implied null). The entire state of a given entity is always stored in a single message, the message key is required to be non-null and acts as the "primary key" in relational database terms, and the message value is the rest of the entity state (some fields may still act as a 'foreign key' reference though). 
 
 We could have instead allowed a more granular scheme where a message only contains a single field that is changing (key would then need to include field name in order for compaction to play nicely), and that would have at least two benefits: 
   1. Clients would not need to know the entire state of a record when making single field changes (currently clients must re-set even the fields they aren't intending to change in the record)
