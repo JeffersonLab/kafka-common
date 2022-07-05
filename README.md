@@ -9,6 +9,7 @@ Common Java utilities for Apache Kafka.  Currently the library provides support 
 - [Configure](https://github.com/JeffersonLab/kafka-common#configure)
 - [Build](https://github.com/JeffersonLab/kafka-common#build)
 - [Test](https://github.com/JeffersonLab/kafka-common#test)
+- [Release](https://github.com/JeffersonLab/kafka-common#release)
 - [See Also](https://github.com/JeffersonLab/kafka-common#see-also)
 ---
 
@@ -66,6 +67,15 @@ gradlew integrationTest
 ```
 
 **Note**: By default integration tests require localhost port 9094 be available for Kafka.
+
+## Release
+1. Bump the version number in build.gradle and commit and push to GitHub (using [Semantic Versioning](https://semver.org/)).   
+1. Create a new release on the GitHub [Releases](https://github.com/JeffersonLab/kafka-common/releases) page corresponding to same version in build.gradle (Enumerate changes and link issues)
+1. Publish new artifact on maven central with:
+```
+gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+```
+4. Update javadocs by copying them from build dir into gh-pages branch and updating index.html (commit, push).
 
 ## See Also
 - [jaws-libj](https://github.com/JeffersonLab/jaws-libj)
