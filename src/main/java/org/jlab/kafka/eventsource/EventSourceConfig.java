@@ -6,7 +6,7 @@ import org.apache.kafka.common.config.ConfigDef;
 import java.util.Map;
 
 /**
- * Configuration for an EventSourceTable.  All ConsumerConfig properties are valid, but a few default value overrides
+ * Configuration for an EventSourceTable.  All {@link org.apache.kafka.clients.consumer.ConsumerConfig} properties are valid, but a few default value overrides
  * are set here.  The EventSourceConfig specific (non ConsumerConfigs) include: TOPIC_CONFIG, HIGH_WATER_TIMEOUT_CONFIG,
  * HIGH_WATER_UNITS_CONFIG, COMPACTED_CACHE_CONFIG, RESUME_OFFSET_CONFIG, and POLL_MS_CONFIG.
  */
