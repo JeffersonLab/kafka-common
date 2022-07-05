@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNull;
 public class EventSourceTest {
     private static Logger LOGGER = LoggerFactory.getLogger(EventSourceTest.class);
 
-    private static final TIMEOUT_SECONDS = 10;
+    private static final int TIMEOUT_SECONDS = 10;
     
     @Test
     public void basicTableTest() throws ExecutionException, InterruptedException, TimeoutException {
