@@ -70,10 +70,10 @@ public class TestUtils {
     public static Properties getDefaultConsumerProps(String topicName) {
         Properties props = new Properties();
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_BOOTSTRAP_SERVERS, getBootstrapServers());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_KEY_DESERIALIZER, StringDeserializer.class.getName());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_VALUE_DESERIALIZER, StringDeserializer.class.getName());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_TOPIC, topicName);
+        props.setProperty(EventSourceConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
+        props.setProperty(EventSourceConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(EventSourceConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(EventSourceConfig.TOPIC_CONFIG, topicName);
 
         return props;
     }

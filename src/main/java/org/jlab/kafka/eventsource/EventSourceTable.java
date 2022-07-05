@@ -69,11 +69,6 @@ public class EventSourceTable<K, V> implements AutoCloseable {
 
         // Not sure if there is a better way to get configs (with defaults) from EventSourceConfig into a
         // Properties object (or Map) for KafkaConsumer - we manually copy values over into a new clean Properties.
-        // Tried the following without success:
-        // - if you use config.valuesWithPrefixOverride() to obtain consumer props it will compile, but serialization
-        // may fail at runtime w/ClassCastException! (I guess stuff is mangled from String to Objects or something)
-        // - if you simply pass the constructor argument above "props" along to KafkaConsumer, the defaults for missing
-        // values won't be set.
         Properties consumerProps = new Properties();
 
         // Pass values in as is from user (without defaults); then next we'll ensure defaults are used if needed
@@ -82,16 +77,27 @@ public class EventSourceTable<K, V> implements AutoCloseable {
         // inside the KafkaConsumer constructor when it also creates a new Properties and uses putAll().
         consumerProps.putAll(props);
 
-        consumerProps.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(EventSourceConfig.EVENT_SOURCE_BOOTSTRAP_SERVERS));
-        consumerProps.setProperty(ConsumerConfig.GROUP_ID_CONFIG, config.getString(EventSourceConfig.EVENT_SOURCE_GROUP));
-        consumerProps.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, config.getString(EventSourceConfig.EVENT_SOURCE_KEY_DESERIALIZER));
-        consumerProps.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, config.getString(EventSourceConfig.EVENT_SOURCE_VALUE_DESERIALIZER));
+        // Apply our EventSourceConfig default overrides
+        consumerProps.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(EventSourceConfig.BOOTSTRAP_SERVERS_CONFIG));
+        consumerProps.setProperty(ConsumerConfig.GROUP_ID_CONFIG, config.getString(EventSourceConfig.GROUP_ID_CONFIG));
+        consumerProps.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, config.getString(EventSourceConfig.KEY_DESERIALIZER_CLASS_CONFIG));
+        consumerProps.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, config.getString(EventSourceConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
+        consumerProps.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, config.getString(EventSourceConfig.AUTO_OFFSET_RESET_CONFIG));
+        consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, config.getBoolean(EventSourceConfig.ENABLE_AUTO_COMMIT_CONFIG));
 
         // Deserializer specific configs are passed in via putAll(props) and don't have defaults in EventSourceConfig
         // Examples:
         // - KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG
         // - KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG
 
+
+        // Remove EventSourceTable specific configs as otherwise KafkaConsumer will log warning of unknown prop
+        consumerProps.remove(EventSourceConfig.TOPIC_CONFIG);
+        consumerProps.remove(EventSourceConfig.COMPACTED_CACHE_CONFIG);
+        consumerProps.remove(EventSourceConfig.HIGH_WATER_TIMEOUT_CONFIG);
+        consumerProps.remove(EventSourceConfig.HIGH_WATER_UNITS_CONFIG);
+        consumerProps.remove(EventSourceConfig.RESUME_OFFSET_CONFIG);
+        consumerProps.remove(EventSourceConfig.POLL_MS_CONFIG);
 
         consumer = new KafkaConsumer<K, V>(consumerProps);
     }
@@ -159,9 +165,9 @@ public class EventSourceTable<K, V> implements AutoCloseable {
     }
 
     private void init() {
-        log.debug("subscribing to topic: {}", config.getString(EventSourceConfig.EVENT_SOURCE_TOPIC));
+        log.debug("subscribing to topic: {}", config.getString(EventSourceConfig.TOPIC_CONFIG));
 
-        consumer.subscribe(Collections.singletonList(config.getString(EventSourceConfig.EVENT_SOURCE_TOPIC)), new ConsumerRebalanceListener() {
+        consumer.subscribe(Collections.singletonList(config.getString(EventSourceConfig.TOPIC_CONFIG)), new ConsumerRebalanceListener() {
 
             @Override
             public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
@@ -175,7 +181,7 @@ public class EventSourceTable<K, V> implements AutoCloseable {
                     throw new IllegalStateException("We only support single partition Event Sourced topics at this time");
                 }
 
-                long resumeOffset = config.getLong(EventSourceConfig.EVENT_SOURCE_RESUME_OFFSET);
+                long resumeOffset = config.getLong(EventSourceConfig.RESUME_OFFSET_CONFIG);
 
                 TopicPartition p = partitions.iterator().next(); // Exactly one partition verified above
 
@@ -205,16 +211,16 @@ public class EventSourceTable<K, V> implements AutoCloseable {
             public void run() {
                 timeout.set(true);
             }
-        }, config.getLong(EventSourceConfig.EVENT_SOURCE_HIGH_WATER_TIMEMOUT),
-                TimeUnit.valueOf(config.getString(EventSourceConfig.EVENT_SOURCE_HIGH_WATER_UNITS)));
+        }, config.getLong(EventSourceConfig.HIGH_WATER_TIMEOUT_CONFIG),
+                TimeUnit.valueOf(config.getString(EventSourceConfig.HIGH_WATER_UNITS_CONFIG)));
 
-        boolean provideCompactedCache = config.getBoolean(EventSourceConfig.EVENT_SOURCE_COMPACTED_CACHE);
+        boolean provideCompactedCache = config.getBoolean(EventSourceConfig.COMPACTED_CACHE_CONFIG);
 
         LinkedHashMap<K, EventSourceRecord<K,V>> compactedCache = new LinkedHashMap<>();
 
         while(!endReached && !timeout.get() && consumerState.get() == CONSUMER_STATE.RUNNING) {
-            log.debug("polling for changes ({})", config.getString(EventSourceConfig.EVENT_SOURCE_TOPIC));
-            ConsumerRecords<K, V> consumerRecords = consumer.poll(Duration.ofMillis(config.getLong(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS)));
+            log.debug("polling for changes ({})", config.getString(EventSourceConfig.TOPIC_CONFIG));
+            ConsumerRecords<K, V> consumerRecords = consumer.poll(Duration.ofMillis(config.getLong(EventSourceConfig.POLL_MS_CONFIG)));
 
             List<EventSourceRecord<K, V>> eventRecords = new ArrayList<>();
 
@@ -247,8 +253,8 @@ public class EventSourceTable<K, V> implements AutoCloseable {
 
     private void monitorChanges() {
         while(consumerState.get() == CONSUMER_STATE.RUNNING) {
-            log.debug("polling for changes ({})", config.getString(EventSourceConfig.EVENT_SOURCE_TOPIC));
-            ConsumerRecords<K, V> consumerRecords = consumer.poll(Duration.ofMillis(config.getLong(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS)));
+            log.debug("polling for changes ({})", config.getString(EventSourceConfig.TOPIC_CONFIG));
+            ConsumerRecords<K, V> consumerRecords = consumer.poll(Duration.ofMillis(config.getLong(EventSourceConfig.POLL_MS_CONFIG)));
             List<EventSourceRecord<K, V>> eventRecords = new ArrayList<>();
 
             if (consumerRecords.count() > 0) { // We have changes

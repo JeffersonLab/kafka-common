@@ -3,7 +3,6 @@ package org.jlab.kafka.serde;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.jlab.kafka.eventsource.EventSourceConfig;
 import org.jlab.kafka.eventsource.EventSourceListener;
 import org.jlab.kafka.eventsource.EventSourceRecord;
@@ -46,10 +45,10 @@ public class SerdeTest {
     public Properties getDefaultConsumerProps(String topicName) {
         Properties props = new Properties();
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_BOOTSTRAP_SERVERS, TestUtils.getBootstrapServers());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_KEY_DESERIALIZER, TestKeyDeserializer.class.getName());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_VALUE_DESERIALIZER, TestValueDeserializer.class.getName());
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_TOPIC, topicName);
+        props.setProperty(EventSourceConfig.BOOTSTRAP_SERVERS_CONFIG, TestUtils.getBootstrapServers());
+        props.setProperty(EventSourceConfig.KEY_DESERIALIZER_CLASS_CONFIG, TestKeyDeserializer.class.getName());
+        props.setProperty(EventSourceConfig.VALUE_DESERIALIZER_CLASS_CONFIG, TestValueDeserializer.class.getName());
+        props.setProperty(EventSourceConfig.TOPIC_CONFIG, topicName);
 
         return props;
     }

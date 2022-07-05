@@ -83,7 +83,7 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_RESUME_OFFSET, "2");
+        props.setProperty(EventSourceConfig.RESUME_OFFSET_CONFIG, "2");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
@@ -162,8 +162,8 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
+        props.setProperty(EventSourceConfig.POLL_MS_CONFIG, "100");
+        props.setProperty(EventSourceConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
@@ -222,8 +222,8 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
+        props.setProperty(EventSourceConfig.POLL_MS_CONFIG, "100");
+        props.setProperty(EventSourceConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
@@ -283,8 +283,8 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
+        props.setProperty(EventSourceConfig.POLL_MS_CONFIG, "100");
+        props.setProperty(EventSourceConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
@@ -338,9 +338,9 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_COMPACTED_CACHE, "false");
+        props.setProperty(EventSourceConfig.POLL_MS_CONFIG, "100");
+        props.setProperty(EventSourceConfig.MAX_POLL_RECORDS_CONFIG, "1");
+        props.setProperty(EventSourceConfig.COMPACTED_CACHE_CONFIG, "false");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
@@ -394,8 +394,8 @@ public class EventSourceTest {
         // EventSourceTable (Consumer)
         Properties props = TestUtils.getDefaultConsumerProps(topicName);
 
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_POLL_MILLIS, "100");
-        props.setProperty(EventSourceConfig.EVENT_SOURCE_MAX_POLL_RECORDS, "1");
+        props.setProperty(EventSourceConfig.POLL_MS_CONFIG, "100");
+        props.setProperty(EventSourceConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         final LinkedHashMap<String, EventSourceRecord<String, String>> database = new LinkedHashMap<>();
 
