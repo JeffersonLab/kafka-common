@@ -19,6 +19,8 @@ import static org.junit.Assert.assertNull;
 public class EventSourceTest {
     private static Logger LOGGER = LoggerFactory.getLogger(EventSourceTest.class);
 
+    private static final TIMEOUT_SECONDS = 10;
+    
     @Test
     public void basicTableTest() throws ExecutionException, InterruptedException, TimeoutException {
 
@@ -52,7 +54,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -100,7 +102,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -137,7 +139,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -186,7 +188,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -257,7 +259,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -311,7 +313,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -367,7 +369,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
@@ -429,7 +431,7 @@ public class EventSourceTest {
 
             table.start();
 
-            boolean reached = table.awaitHighWaterOffset(5, TimeUnit.SECONDS);
+            boolean reached = table.awaitHighWaterOffset(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if(!reached) {
                 throw new TimeoutException("awaitHighWater Timeout!");
