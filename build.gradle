@@ -6,7 +6,7 @@ plugins {
 
 description = "Jefferson Lab Kafka Common Library"
 group 'org.jlab'
-version '1.1.0'
+version '1.2.0'
 
 tasks.withType(JavaCompile) {
     options.release = 11
