@@ -20,7 +20,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Start containers
-      run: docker compose -f "test.yml" up -d
+      run: docker compose up -d
     - name: Wait for containers to settle
       run: docker exec -i kafka bash -c "sleep 10"
     - name: Run integration test
@@ -30,7 +30,7 @@ jobs:
       run: docker logs kafka
     - name: Stop containers
       if: always()
-      run: docker compose -f "test.yml" down
+      run: docker compose down
 
 
 

@@ -58,7 +58,7 @@ gradlew build
 ## Test
 Continuous Integration (CI) is setup using GitHub Actions, so on push tests are automatically run unless [no ci] is included in the commit message. Tests can be manually run on a local workstation using:
 ```
-docker compose -f test.yml up
+docker compose up
 ```
 
 Wait for containers to start then:
