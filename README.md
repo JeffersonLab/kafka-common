@@ -71,11 +71,8 @@ gradlew integrationTest
 ## Release
 1. Bump the version number in build.gradle and commit and push to GitHub (using [Semantic Versioning](https://semver.org/)).   
 1. Create a new release on the GitHub [Releases](https://github.com/JeffersonLab/kafka-common/releases) page corresponding to same version in build.gradle (Enumerate changes and link issues)
-1. Publish new artifact on maven central with:
-```
-gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
-```
-4. Update javadocs by copying them from build dir into gh-pages branch and updating index.html (commit, push).
+1. [Publish to Maven Central](https://github.com/JeffersonLab/kafka-common/actions/workflows/maven-publish.yml) GitHub Action should run automatically.
+1. [Publish to gh-pages](https://github.com/JeffersonLab/kafka-common/actions/workflows/gh-pages-publish.yml) GitHub Action should run automatically.
 
 ## See Also
 - [jaws-libj](https://github.com/JeffersonLab/jaws-libj)
